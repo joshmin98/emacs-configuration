@@ -1,9 +1,14 @@
 * System Requirements
   This configuration relies on certain software to be installed on the host system.
   #+BEGIN_SRC bash
-  
+    yay -S ttf-hack
   #+END_SRC
 * General Settings
+** Font
+   Requires the ~ttf-hack~ font package.
+   #+BEGIN_SRC emacs-lisp
+     (set-frame-font "Hack 10" nil t)
+   #+END_SRC
 ** Don't show extraneous bars
    #+BEGIN_SRC emacs-lisp
 (menu-bar-mode -1)
@@ -38,17 +43,17 @@
 * General Packages
 ** Evil Mode
    #+BEGIN_SRC emacs-lisp
-(use-package evil
-  :ensure t ;; install the evil package if not installed
-  :init ;; tweak evil's configuration before loading it
-  (setq evil-search-module 'evil-search)
-  (setq evil-ex-complete-emacs-commands nil)
-  (setq evil-vsplit-window-right t)
-  (setq evil-split-window-below t)
-  (setq evil-shift-round nil)
-  (setq evil-want-C-u-scroll t)
-  :config ;; tweak evil after loading it
-  (evil-mode))
+     (use-package evil
+       :ensure t ;; install the evil package if not installed
+       :init ;; tweak evil's configuration before loading it
+       (setq evil-search-module 'evil-search)
+       (setq evil-ex-complete-emacs-commands nil)
+       (setq evil-vsplit-window-right t)
+       (setq evil-split-window-below t)
+       (setq evil-shift-round nil)
+       (setq evil-want-C-u-scroll t)
+       :config ;; tweak evil after loading it
+       (evil-mode))
    #+END_SRC
 ** General (Keybindings)
    #+BEGIN_SRC emacs-lisp
@@ -57,60 +62,60 @@
    #+END_SRC
 ** Which-Key
    #+BEGIN_SRC emacs-lisp
-(use-package which-key
-  :ensure t
-  :config (which-key-mode))
+     (use-package which-key
+       :ensure t
+       :config (which-key-mode))
    #+END_SRC
 ** Counsel
    #+BEGIN_SRC emacs-lisp
-(use-package counsel
-  :ensure t)
+     (use-package counsel
+       :ensure t)
    #+END_SRC
 ** Swiper
    #+BEGIN_SRC emacs-lisp
-(use-package swiper
-  :ensure t)
+     (use-package swiper
+       :ensure t)
    #+END_SRC
 ** Ivy
    #+BEGIN_SRC emacs-lisp
-(use-package ivy
-  :ensure t
-  :config
-  (ivy-mode 1)
-  (setq ivy-use-virtual-buffers t)
-  (setq enable-recursive-minibuffers t)
-  ;; enable this if you want `swiper' to use it
-  (setq search-default-mode #'char-fold-to-regexp)
-  (global-set-key "\C-s" 'swiper)
-  (global-set-key (kbd "C-c C-r") 'ivy-resume)
-  (global-set-key (kbd "<f6>") 'ivy-resume)
-  (global-set-key (kbd "M-x") 'counsel-M-x)
-  (global-set-key (kbd "C-x C-f") 'counsel-find-file)
-  (global-set-key (kbd "<f1> f") 'counsel-describe-function)
-  (global-set-key (kbd "<f1> v") 'counsel-describe-variable)
-  (global-set-key (kbd "<f1> o") 'counsel-describe-symbol)
-  (global-set-key (kbd "<f1> l") 'counsel-find-library)
-  (global-set-key (kbd "<f2> i") 'counsel-info-lookup-symbol)
-  (global-set-key (kbd "<f2> u") 'counsel-unicode-char)
-  (global-set-key (kbd "C-c g") 'counsel-git)
-  (global-set-key (kbd "C-c j") 'counsel-git-grep)
-  (global-set-key (kbd "C-c k") 'counsel-ag)
-  (global-set-key (kbd "C-x l") 'counsel-locate)
-  (global-set-key (kbd "C-S-o") 'counsel-rhythmbox)
-  (define-key minibuffer-local-map (kbd "C-r") 'counsel-minibuffer-history))
+     (use-package ivy
+       :ensure t
+       :config
+       (ivy-mode 1)
+       (setq ivy-use-virtual-buffers t)
+       (setq enable-recursive-minibuffers t)
+       ;; enable this if you want `swiper' to use it
+       (setq search-default-mode #'char-fold-to-regexp)
+       (global-set-key "\C-s" 'swiper)
+       (global-set-key (kbd "C-c C-r") 'ivy-resume)
+       (global-set-key (kbd "<f6>") 'ivy-resume)
+       (global-set-key (kbd "M-x") 'counsel-M-x)
+       (global-set-key (kbd "C-x C-f") 'counsel-find-file)
+       (global-set-key (kbd "<f1> f") 'counsel-describe-function)
+       (global-set-key (kbd "<f1> v") 'counsel-describe-variable)
+       (global-set-key (kbd "<f1> o") 'counsel-describe-symbol)
+       (global-set-key (kbd "<f1> l") 'counsel-find-library)
+       (global-set-key (kbd "<f2> i") 'counsel-info-lookup-symbol)
+       (global-set-key (kbd "<f2> u") 'counsel-unicode-char)
+       (global-set-key (kbd "C-c g") 'counsel-git)
+       (global-set-key (kbd "C-c j") 'counsel-git-grep)
+       (global-set-key (kbd "C-c k") 'counsel-ag)
+       (global-set-key (kbd "C-x l") 'counsel-locate)
+       (global-set-key (kbd "C-S-o") 'counsel-rhythmbox)
+       (define-key minibuffer-local-map (kbd "C-r") 'counsel-minibuffer-history))
    #+END_SRC
 ** Projectile
    #+BEGIN_SRC emacs-lisp
-(use-package projectile
-  :ensure t
-  :config
-  (define-key evil-normal-state-map (kbd "SPC p") #'projectile-command-map)
-  (projectile-mode +1))
+     (use-package projectile
+       :ensure t
+       :config
+       (define-key evil-normal-state-map (kbd "SPC p") #'projectile-command-map)
+       (projectile-mode +1))
 
-(use-package counsel-projectile
-  :ensure t
-  :config
-  (counsel-projectile-mode +1))
+     (use-package counsel-projectile
+       :ensure t
+       :config
+       (counsel-projectile-mode +1))
    #+END_SRC
 ** Company
    #+BEGIN_SRC emacs-lisp
@@ -182,27 +187,27 @@
 * UI
 ** Theme
    #+BEGIN_SRC emacs-lisp
-(use-package doom-themes
-  :ensure t
-  :config
-  (load-theme 'doom-nord t))
+     (use-package doom-themes
+       :ensure t
+       :config
+       (load-theme 'doom-nord t))
    #+END_SRC
 ** Modeline
    #+BEGIN_SRC emacs-lisp
-(use-package doom-modeline
-  :ensure t
-  :hook (after-init . doom-modeline-mode))
+     (use-package doom-modeline
+       :ensure t
+       :hook (after-init . doom-modeline-mode))
    #+END_SRC
 ** Icons 
+   Remember to run ~M-x "all-the-icons-install-fonts"~ on a fresh install
    #+BEGIN_SRC emacs-lisp
-;; Remember to run M-x "all-the-icons-install-fonts" on a fresh install
-(use-package all-the-icons
-  :ensure t)
+     (use-package all-the-icons
+       :ensure t)
 
-(use-package all-the-icons-ivy
-  :ensure t
-  :config
-  (all-the-icons-ivy-setup))
+     (use-package all-the-icons-ivy
+       :ensure t
+       :config
+       (all-the-icons-ivy-setup))
    #+END_SRC
 ** Centaur Tabs
    #+BEGIN_SRC emacs-lisp
