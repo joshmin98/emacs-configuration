@@ -11,34 +11,25 @@
    #+END_SRC
 ** Don't show extraneous bars
    #+BEGIN_SRC emacs-lisp
-(menu-bar-mode -1)
-(tool-bar-mode -1)
-(scroll-bar-mode -1)
+     (menu-bar-mode -1)
+     (tool-bar-mode -1)
+     (scroll-bar-mode -1)
    #+END_SRC
 ** Highlight Lines
    #+BEGIN_SRC emacs-lisp
-(global-hl-line-mode +1)
+     (global-hl-line-mode +1)
    #+END_SRC
 ** Line Numbers
    #+BEGIN_SRC emacs-lisp
-(add-hook 'prog-mode-hook 'display-line-numbers-mode)
+     (add-hook 'prog-mode-hook 'display-line-numbers-mode)
    #+END_SRC
 ** Matching Parens
    #+BEGIN_SRC emacs-lisp
-(show-paren-mode 1)
+     (show-paren-mode 1)
    #+END_SRC
 ** Disable Startup Message
    #+BEGIN_SRC emacs-lisp
-(setq inhibit-startup-message t)
-   #+END_SRC
-** Bookmarks
-   #+BEGIN_SRC emacs-lisp
-     (general-define-key
-      :states 'normal
-      :prefix "SPC b"
-      "a" 'bookmark-set
-      "x" 'bookmark-delete
-      "l" 'list-bookmarks)
+     (setq inhibit-startup-message t)
    #+END_SRC
 * General Packages
 ** Evil Mode
@@ -135,7 +126,6 @@
      (use-package lsp-mode
        :ensure t
        :config
-       (require 'lsp-imenu)
        (add-hook 'lsp-after-open-hook 'lsp-enable-imenu))
 
      (use-package lsp-ui
