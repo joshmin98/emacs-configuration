@@ -9,6 +9,10 @@
    #+BEGIN_SRC emacs-lisp
      (set-frame-font "Hack 10" nil t)
    #+END_SRC
+** Tab Width
+   #+BEGIN_SRC emacs-lisp
+     (setq default-tab-width 2)
+   #+END_SRC
 ** Don't show extraneous bars
    #+BEGIN_SRC emacs-lisp
      (menu-bar-mode -1)
@@ -124,14 +128,32 @@
 ** LSP
    #+BEGIN_SRC emacs-lisp
      (use-package lsp-mode
+       :commands lsp
        :ensure t
+       :hook
+       (elixir-mode . lsp)
+       :init
+       (add-to-list 'exec-path (expand-file-name "~/.emacs.d/elixir-ls/release"))
        :config
        (add-hook 'lsp-after-open-hook 'lsp-enable-imenu))
+
 
      (use-package lsp-ui
        :ensure t
        :config
-       (setq lsp-ui-sideline-ignore-duplicate t)
+       (setq lsp-ui-doc-max-height 13
+	     lsp-ui-doc-max-width 80
+	     lsp-ui-sideline-ignore-duplicate t
+	     lsp-ui-doc-header t
+	     lsp-ui-doc-include-signature t
+	     lsp-ui-doc-position 'bottom
+	     lsp-ui-doc-use-webkit nil
+	     lsp-ui-flycheck-enable t
+	     lsp-ui-flycheck-list-position 'right
+	     lsp-ui-imenu-kind-position 'left
+	     lsp-ui-sideline-code-actions-prefix "💡"
+	     ;; fix for completing candidates not showing after “Enum.”:
+	     company-lsp-match-candidate-predicate #'company-lsp-match-candidate-prefix)
        (add-hook 'lsp-mode-hook 'lsp-ui-mode))
 
      (use-package company-lsp
@@ -176,7 +198,7 @@
      (use-package magit
        :ensure t
        :config
-       (define-key evil-normal-state-map (kbd "SPC g") #'magit-status))
+       (define-key evil-normal-state-map (kbd "SPC g g") #'magit-status))
 
      (use-package evil-magit
        :ensure t)
@@ -199,6 +221,13 @@
        :ensure t
        :init
        (global-undo-tree-mode))
+   #+END_SRC
+** Highlight TODOs
+   #+BEGIN_SRC emacs-lisp
+     (use-package hl-todo
+       :ensure t
+       :config
+       (global-hl-todo-mode t))
    #+END_SRC
 * UI
 ** Theme
@@ -287,7 +316,8 @@
      (use-package web-mode
        :ensure t
        :mode
-       (("\\.tsx$" . web-mode))
+       (("\\.tsx$" . web-mode)
+	("\\.leex$" . web-mode))
        :config
        (setq web-mode-markup-indent-offset 2)
        (setq web-mode-css-indent-offset 2)
@@ -297,7 +327,8 @@
        (setq web-mode-style-padding 2)
        (setq web-mode-enable-auto-pairing t)
        (setq web-mode-enable-auto-closing t)
-       (setq web-mode-enable-current-element-highlight t))
+       (setq web-mode-enable-current-element-highlight t)
+       (setq web-mode-engines-alist '(("elixir" . "\\.ex\\'"))))
    #+END_SRC
 ** Emmet Mode
    #+BEGIN_SRC emacs-lisp
@@ -310,6 +341,7 @@
    #+BEGIN_SRC emacs-lisp
      (use-package typescript-mode
        :ensure t)
+     (setq typescript-indent-level 2)
    #+END_SRC
 ** TIDE
    #+BEGIN_SRC emacs-lisp
@@ -349,7 +381,76 @@
      (use-package prettier-js
        :ensure t
        :config
-       (add-hook 'js-mode-hook 'prettier-js-mode)
        (add-hook 'typescript-mode-hook 'prettier-js-mode)
-       (add-hook 'web-mode-hook 'prettier-js-mode))
+       (add-hook 'tide-mode-hook 'prettier-js-mode))
+   #+END_SRC
+* YML
+  #+BEGIN_SRC emacs-lisp
+    (use-package yaml-mode
+      :ensure t
+      :config
+      (add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode)))
+  #+END_SRC
+* Elixir
+  Elixir intellisense relies partially on `elixir-ls`. 
+  Make sure that `elixir-ls` is in the `.emacs.d` directory and do the following:
+  #+BEGIN_SRC bash
+  git clone https://github.com/JakeBecker/elixir-ls
+  cd elixir_ls
+  mix deps.get
+  mix compile
+  mix elixir_ls.release -o release
+  #+END_SRC
+** Elixir Mode (with support for Phoenix Liveview templating)
+   #+BEGIN_SRC emacs-lisp
+     (use-package elixir-mode
+       :ensure t)
+     (use-package polymode
+       :mode ("\.ex$" . poly-elixir-web-mode)
+       :config
+       (define-hostmode poly-elixir-hostmode :mode 'elixir-mode)
+       (define-innermode poly-liveview-expr-elixir-innermode
+	 :mode 'web-mode
+	 :head-matcher (rx line-start (* space) "~L" (= 3 (char "\"'")) line-end)
+	 :tail-matcher (rx line-start (* space) (= 3 (char "\"'")) line-end)
+	 :head-mode 'host
+	 :tail-mode 'host
+	 :allow-nested nil
+	 :fallback-mode 'host)
+       (define-polymode poly-elixir-web-mode
+	 :hostmode 'poly-elixir-hostmode
+	 :innermodes '(poly-liveview-expr-elixir-innermode)))
+
+   #+END_SRC
+** Alchemist
+   #+BEGIN_SRC emacs-lisp
+     (use-package alchemist
+       :after (elixir-mode)
+       :ensure t)
+   #+END_SRC
+** Elixir Yasnippets
+   #+BEGIN_SRC emacs-lisp
+     (use-package elixir-yasnippets
+       :ensure t)
+   #+END_SRC
+** Flycheck Credo
+   #+BEGIN_SRC emacs-lisp
+     (use-package flycheck-credo
+       :ensure t
+       :config
+       (flycheck-credo-setup))
+   #+END_SRC
+   
+** Keybindings
+   #+BEGIN_SRC emacs-lisp
+	(general-define-key
+	 :keymaps 'elixir-mode-map
+	 :states 'normal
+	 :prefix "SPC e"
+	 "g d" 'alchemist-goto-definition-at-point
+	 "g b" 'alchemist-goto-jump-back
+	 "m" 'alchemist-mix
+
+	 "e n" 'flycheck-next-error
+	 "e p" 'flycheck-previous-error)
    #+END_SRC
