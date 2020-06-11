@@ -231,6 +231,20 @@
        :config
        (global-hl-todo-mode t))
    #+END_SRC
+** Prettify Symbols
+   #+BEGIN_SRC emacs-lisp
+     (global-prettify-symbols-mode 1)
+     (add-hook 'prog-mode-hook (lambda ()
+				 (setq prettify-symbols-alist '(("===" . ?≡) ("|>" . ?▷) ("!=" . ?≠)
+								("!==" . ?≢) (">=" . ?≥) ("<=" . ?≤)
+								("alpha" . ?α) ("beta" . ?β) ("gamma" . ?γ)
+								("delta" . Δ) ("epsilon" . ?ε) ("zeta" . ?ζ)
+								("eta" . ?η) ("theta" . ?θ) ("lambda" . ?λ)
+								("micro" . ?μ) ("pi" . ?π) ("rho" . ?ρ)
+								("sigma" . ?σ) ("phi" . ?φ) ("omega" . ?Ω)
+								("sqrt" . ?√) ("sum" . ∑) ("infinity" . ∞)
+								("Infinity" . ∞) ("=>" . ?⇒) ("->" . ?→)))))
+   #+END_SRC
 * UI
 ** Theme
    #+BEGIN_SRC emacs-lisp
