@@ -105,7 +105,9 @@
        :ensure t
        :config
        (define-key evil-normal-state-map (kbd "SPC p") #'projectile-command-map)
-       (projectile-mode +1))
+       (projectile-mode +1)
+       (setq projectile-enable-caching t
+	     projectile-indexing-method 'native)) 
 
      (use-package counsel-projectile
        :ensure t
