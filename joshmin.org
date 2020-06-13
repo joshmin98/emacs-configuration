@@ -438,6 +438,11 @@
 	 :hostmode 'poly-elixir-hostmode
 	 :innermodes '(poly-liveview-expr-elixir-innermode)))
 
+     (defun elixir-format-save-hook ()
+       (when (eq major-mode 'elixir-mode)
+	 (elixir-format)))
+
+     (add-hook 'before-save-hook #'elixir-format-save-hook)
    #+END_SRC
 ** Alchemist
    #+BEGIN_SRC emacs-lisp
