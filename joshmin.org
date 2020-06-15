@@ -119,7 +119,8 @@
      (use-package company
        :ensure t
        :init
-       (setq company-tooltip-align-annotations t)
+       (setq company-tooltip-align-annotations t
+	     company-idle-delay 0)
        (add-hook 'after-init-hook 'global-company-mode)
        :config
        (general-define-key
