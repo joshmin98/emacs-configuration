@@ -127,6 +127,7 @@
 	:keymaps 'company-active-map
 	"<tab>" 'company-select-next
 	"<backtab>" 'company-select-previous))
+
    #+END_SRC
 ** LSP
    #+BEGIN_SRC emacs-lisp
