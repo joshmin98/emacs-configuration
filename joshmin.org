@@ -250,10 +250,11 @@
 * UI
 ** Theme
    #+BEGIN_SRC emacs-lisp
-     (use-package doom-themes
-       :ensure t
-       :config
-       (load-theme 'doom-nord t))
+     ;; (use-package doom-themes
+     ;;   :ensure t
+     ;;   :config
+     ;;   (load-theme 'doom-nord t))
+     (load-file "~/.emacs.d/zenburn-theme.el")
    #+END_SRC
 ** Modeline
    #+BEGIN_SRC emacs-lisp
