@@ -280,13 +280,19 @@
        :config
        (setq centaur-tabs-set-bar 'under
 	     x-underline-at-descent-line t
-	     centaur-tabs-style "box"
+	     centaur-tabs-style "bar"
 	     centaur-tabs-set-icons t
 	     centaur-tabs-gray-out-icons 'buffer
 	     centaur-tabs-height 20
 	     centaur-tabs-set-modified-marker t
 	     centaur-tabs-modifier-marker "•")
        (centaur-tabs-mode t))
+
+     (general-define-key
+      :states 'normal
+      "J" 'centaur-tabs-backward
+      "K" 'centaur-tabs-forward
+      )
    #+END_SRC
 ** Dashboard
    #+BEGIN_SRC emacs-lisp
