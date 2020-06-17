@@ -401,7 +401,7 @@ Also bind `class' to ((class color) (min-colors 89))."
    `(centaur-tabs-unselected ((t (:background ,zenburn-bg-1 :foreground ,zenburn-fg-05 ))))
    `(centaur-tabs-selected-modified ((t (:background ,zenburn-bg :foreground ,zenburn-orange ))))
    `(centaur-tabs-unselected-modified ((t (:background ,zenburn-bg-1 :foreground ,zenburn-orange ))))
-   `(centaur-tabs-active-bar-face ((t (:background ,zenburn-yellow :box nil))))
+   `(centaur-tabs-active-bar-face ((t (:background ,zenburn-green :box nil))))
    `(centaur-tabs-modified-marker-selected ((t (:inherit 'centaur-tabs-selected-modified :foreground ,zenburn-yellow :box nil))))
    `(centaur-tabs-modified-marker-unselected ((t (:inherit 'centaur-tabs-unselected-modified :foreground ,zenburn-yellow :box nil))))
 ;;;;; cider
