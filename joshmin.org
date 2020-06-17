@@ -412,8 +412,8 @@
       (add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode)))
   #+END_SRC
 * Elixir
-  Elixir intellisense relies partially on `elixir-ls`. 
-  Make sure that `elixir-ls` is in the `.emacs.d` directory and do the following:
+  Elixir intellisense relies partially on ~elixir-ls~. 
+  Make sure that ~elixir-ls~ is in the ~.emacs.d~ directory and do the following:
   #+BEGIN_SRC bash
   git clone https://github.com/JakeBecker/elixir-ls
   cd elixir_ls
