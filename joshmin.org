@@ -1,5 +1,5 @@
 * System Requirements
-  This configuration relies on certain software to be installed on the host system.
+ This configuration relies on certain software to be installed on the host system.
   #+BEGIN_SRC bash
     yay -S ttf-hack
   #+END_SRC
@@ -7,7 +7,7 @@
 ** Font
    Requires the ~ttf-hack~ font package.
    #+BEGIN_SRC emacs-lisp
-     (set-frame-font "Hack 10" nil t)
+     (set-frame-font "DejaVu Sans Mono 11" nil t)
    #+END_SRC
 ** Tab Width
    #+BEGIN_SRC emacs-lisp
@@ -34,6 +34,11 @@
 ** Disable Startup Message
    #+BEGIN_SRC emacs-lisp
      (setq inhibit-startup-message t)
+   #+END_SRC
+** Disable Lockfiles
+   #+BEGIN_SRC emacs-lisp
+     (setq create-lockfiles nil)
+     (setq-default backup-directory-alist '((".*" . "~/.emacs.d/backups")))
    #+END_SRC
 * General Packages
 ** Evil Mode
@@ -120,7 +125,8 @@
        :ensure t
        :init
        (setq company-tooltip-align-annotations t
-	     company-idle-delay 0.1)
+	     company-idle-delay 0.1
+	     company-minimum-prefix-length 1)
        (add-hook 'after-init-hook 'global-company-mode)
        :config
        (general-define-key
@@ -136,8 +142,8 @@
        :ensure t
        :hook
        (elixir-mode . lsp)
-       :init
-       (add-to-list 'exec-path (expand-file-name "~/.emacs.d/elixir-ls/release"))
+       ;; :init
+       ;; (add-to-list 'exec-path (expand-file-name "~/.emacs.d/elixir-ls/release"))
        :config
        (add-hook 'lsp-after-open-hook 'lsp-enable-imenu))
 
@@ -160,10 +166,11 @@
 	     company-lsp-match-candidate-predicate #'company-lsp-match-candidate-prefix)
        (add-hook 'lsp-mode-hook 'lsp-ui-mode))
 
-     (use-package company-lsp
-       :ensure t
-       :config
-       (push 'company-lsp company-backends))
+     ;; (use-package company-lsp
+     ;;   :ensure t
+     ;;   :config
+     ;;   (push 'company-lsp company-backends))
+     (push 'company-capf company-backends)
    #+END_SRC
 ** Yasnippet
    #+BEGIN_SRC emacs-lisp
@@ -247,14 +254,18 @@
 								("sqrt" . ?√) ("sum" . ∑) ("infinity" . ∞)
 								("Infinity" . ∞) ("=>" . ?⇒) ("->" . ?→)))))
    #+END_SRC
+** Polymode
+   #+BEGIN_SRC emacs-lisp
+     (use-package polymode
+       :ensure t)
+   #+END_SRC
 * UI
 ** Theme
    #+BEGIN_SRC emacs-lisp
-     ;; (use-package doom-themes
-     ;;   :ensure t
-     ;;   :config
-     ;;   (load-theme 'doom-nord t))
-     (load-file "~/.emacs.d/zenburn-theme.el")
+     (use-package doom-themes
+	:ensure t
+	:config
+	(load-theme 'doom-nord t))
    #+END_SRC
 ** Modeline
    #+BEGIN_SRC emacs-lisp
@@ -273,27 +284,6 @@
        :config
        (all-the-icons-ivy-setup))
    #+END_SRC
-** Centaur Tabs
-   #+BEGIN_SRC emacs-lisp
-     (use-package centaur-tabs
-       :ensure t
-       :config
-       (setq centaur-tabs-set-bar 'under
-	     x-underline-at-descent-line t
-	     centaur-tabs-style "bar"
-	     centaur-tabs-set-icons t
-	     centaur-tabs-gray-out-icons 'buffer
-	     centaur-tabs-height 20
-	     centaur-tabs-set-modified-marker t
-	     centaur-tabs-modifier-marker "•")
-       (centaur-tabs-mode t))
-
-     (general-define-key
-      :states 'normal
-      "J" 'centaur-tabs-backward
-      "K" 'centaur-tabs-forward
-      )
-   #+END_SRC
 ** Dashboard
    #+BEGIN_SRC emacs-lisp
      (use-package dashboard
@@ -310,12 +300,61 @@
      (setq initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
    #+END_SRC
 * Org Mode
+** Base
+   #+BEGIN_SRC emacs-lisp
+     (defun efs/org-font-setup ()
+       ;; Replace list hyphen with dot
+       (font-lock-add-keywords 'org-mode
+			       '(("^ *\\([-]\\) "
+				  (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
+
+       ;; Set faces for heading levels
+       (dolist (face '((org-level-1 . 1.5)
+		       (org-level-2 . 1.25)
+		       (org-level-3 . 1.1)
+		       (org-level-4 . 1.0)
+		       (org-level-5 . 1.1)
+		       (org-level-6 . 1.1)
+		       (org-level-7 . 1.1)
+		       (org-level-8 . 1.1)))
+	 (set-face-attribute (car face) nil :font "DejaVu Sans" :weight 'regular :height (cdr face)))
+
+       ;; Ensure that anything that should be fixed-pitch in Org files appears that way
+       (set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
+       (set-face-attribute 'org-code nil   :inherit '(shadow fixed-pitch))
+       (set-face-attribute 'org-table nil   :inherit '(shadow fixed-pitch))
+       (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
+       (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
+       (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
+       (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch))
+
+     (use-package org
+       :hook 
+       (org-mode . efs/org-mode-setup)
+       :config
+       (setq org-ellipsis " ▾")
+       (efs/org-font-setup))
+
+   #+END_SRC
 ** Org Bullets
    #+BEGIN_SRC emacs-lisp
      (use-package org-bullets
        :ensure t
        :config
        (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
+   #+END_SRC
+** Visual Fill
+   #+BEGIN_SRC emacs-lisp
+     (defun org-mode-visual-fill ()
+       (setq visual-fill-column-width 100
+	     visual-fill-column-center-text t)
+       (visual-fill-column-mode 1))
+
+     (use-package visual-fill-column
+       :ensure t
+       :hook
+       (org-mode . org-mode-visual-fill))
+
    #+END_SRC
 * Lisp
 ** Parinfer
@@ -384,7 +423,7 @@
 	 (general-define-key
 	  :keymaps 'tide-mode-map
 	  :states 'normal
-	  :prefix "SPC t"
+	  :prefix "SPC"
 	  "f" 'tide-fix
 	  "i" 'tide-organize-imports
 	  "d" 'tide-documentation-at-point
@@ -394,9 +433,9 @@
 	  "e n" 'flycheck-next-error
 	  "e p" 'flycheck-previous-error
 
-	  "d" 'tide-jump-to-definition
-	  "D" 'tide-jump-to-implementation
-	  "b" 'tide-jump-back
+	  "g d" 'tide-jump-to-definition
+	  "g i" 'tide-jump-to-implementation
+	  "g b" 'tide-jump-back
 	  ))
        (add-hook 'js-mode-hook #'setup-tide-mode)
        (add-hook 'typescript-mode-hook #'setup-tide-mode)
@@ -421,11 +460,11 @@
   Elixir intellisense relies partially on ~elixir-ls~. 
   Make sure that ~elixir-ls~ is in the ~.emacs.d~ directory and do the following:
   #+BEGIN_SRC bash
-  git clone https://github.com/JakeBecker/elixir-ls
-  cd elixir_ls
-  mix deps.get
-  mix compile
-  mix elixir_ls.release -o release
+    git clone https://github.com/JakeBecker/elixir-ls
+    cd elixir_ls
+    mix deps.get
+    mix compile
+    mix elixir_ls.release -o release
   #+END_SRC
 ** Elixir Mode (with support for Phoenix Liveview templating)
    #+BEGIN_SRC emacs-lisp
@@ -485,3 +524,8 @@
 	 "e n" 'flycheck-next-error
 	 "e p" 'flycheck-previous-error)
    #+END_SRC
+* Rust
+  #+BEGIN_SRC emacs-lisp
+    (use-package rustic
+      :ensure t)
+  #+END_SRC

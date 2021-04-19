@@ -1,6 +1,12 @@
 ;; Move custom set variables to different file for portability
 (setq custom-file "~/.emacs.d/custom.el")
 
+(setq create-lockfiles nil)
+(setq backup-directory-alist
+      `((".*" . ,temporary-file-directory)))
+(setq auto-save-file-name-transforms
+      `((".*" ,temporary-file-directory t)))
+
 ;; Use MELPA package archives
 (require 'package)
 (let* ((no-ssl (and (memq system-type '(windows-nt ms-dos))
