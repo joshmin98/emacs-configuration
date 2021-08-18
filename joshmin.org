@@ -125,15 +125,34 @@
        :ensure t
        :init
        (setq company-tooltip-align-annotations t
-	     company-idle-delay 0.1
+	     company-idle-delay 0
 	     company-minimum-prefix-length 1)
-       (add-hook 'after-init-hook 'global-company-mode)
        :config
+       (global-company-mode 1)
        (general-define-key
 	:keymaps 'company-active-map
 	"<tab>" 'company-select-next
 	"<backtab>" 'company-select-previous))
 
+     (use-package company-tabnine
+       :ensure t)
+
+
+     ;; workaround for company-transformers
+     (setq company-tabnine--disable-next-transform nil)
+     (defun my-company--transform-candidates (func &rest args)
+       (if (not company-tabnine--disable-next-transform)
+	   (apply func args)
+	 (setq company-tabnine--disable-next-transform nil)
+	 (car args)))
+
+     (defun my-company-tabnine (func &rest args)
+       (when (eq (car args) 'candidates)
+	 (setq company-tabnine--disable-next-transform t))
+       (apply func args))
+
+     (advice-add #'company--transform-candidates :around #'my-company--transform-candidates)
+     (advice-add #'company-tabnine :around #'my-company-tabnine)
    #+END_SRC
 ** LSP
    #+BEGIN_SRC emacs-lisp
@@ -151,26 +170,19 @@
      (use-package lsp-ui
        :ensure t
        :config
-       (setq lsp-ui-doc-max-height 13
-	     lsp-ui-doc-max-width 80
-	     lsp-ui-sideline-ignore-duplicate t
-	     lsp-ui-doc-header t
-	     lsp-ui-doc-include-signature t
-	     lsp-ui-doc-position 'bottom
-	     lsp-ui-doc-use-webkit nil
-	     lsp-ui-flycheck-enable t
-	     lsp-ui-flycheck-list-position 'right
-	     lsp-ui-imenu-kind-position 'left
-	     lsp-ui-sideline-code-actions-prefix "💡"
-	     ;; fix for completing candidates not showing after “Enum.”:
-	     company-lsp-match-candidate-predicate #'company-lsp-match-candidate-prefix)
+       (setq lsp-ui-doc-max-height 13)
+       lsp-ui-doc-max-width 80
+       lsp-ui-sideline-ignore-duplicate t
+       lsp-ui-doc-header t
+       lsp-ui-doc-include-signature t
+       lsp-ui-doc-position 'bottom
+       lsp-ui-doc-use-webkit nil
+       lsp-ui-flycheck-list-position 'right
+       lsp-ui-imenu-kind-position 'left
+       lsp-ui-sideline-code-actions-prefix "💡"
        (add-hook 'lsp-mode-hook 'lsp-ui-mode))
 
-     ;; (use-package company-lsp
-     ;;   :ensure t
-     ;;   :config
-     ;;   (push 'company-lsp company-backends))
-     (push 'company-capf company-backends)
+     (setq company-backends '((company-tabnine :with company-capf)))
    #+END_SRC
 ** Yasnippet
    #+BEGIN_SRC emacs-lisp
@@ -203,6 +215,11 @@
        :ensure t
        :config
        (smartparens-global-mode 1))
+   #+END_SRC
+** Rainbow Mode
+   #+BEGIN_SRC emacs-lisp
+     (use-package rainbow-mode
+       :ensure t)
    #+END_SRC
 ** Magit
    #+BEGIN_SRC emacs-lisp
@@ -405,49 +422,17 @@
 ** Typescript Mode
    #+BEGIN_SRC emacs-lisp
      (use-package typescript-mode
-       :ensure t)
-     (setq typescript-indent-level 2)
-   #+END_SRC
-** TIDE
-   #+BEGIN_SRC emacs-lisp
-     (use-package tide
        :ensure t
        :config
-       (defun setup-tide-mode ()
-	 (interactive)
-	 (tide-setup)
-	 (setq flycheck-check-syntax-automatically '(save-mode-enabled))
-	 (flycheck-mode +1)
-	 (eldoc-mode +1)
-	 (tide-hl-identifier-mode +1)
-	 (general-define-key
-	  :keymaps 'tide-mode-map
-	  :states 'normal
-	  :prefix "SPC"
-	  "f" 'tide-fix
-	  "i" 'tide-organize-imports
-	  "d" 'tide-documentation-at-point
-
-	  "e e" 'tide-error-at-point
-	  "e l" 'tide-project-errors
-	  "e n" 'flycheck-next-error
-	  "e p" 'flycheck-previous-error
-
-	  "g d" 'tide-jump-to-definition
-	  "g i" 'tide-jump-to-implementation
-	  "g b" 'tide-jump-back
-	  ))
-       (add-hook 'js-mode-hook #'setup-tide-mode)
-       (add-hook 'typescript-mode-hook #'setup-tide-mode)
-       (add-hook 'web-mode-hook #'setup-tide-mode))
+       (add-hook 'typescript-mode-hook 'lsp))
+     (setq typescript-indent-level 2)
    #+END_SRC
 ** Prettier
    #+BEGIN_SRC emacs-lisp
      (use-package prettier-js
        :ensure t
        :config
-       (add-hook 'typescript-mode-hook 'prettier-js-mode)
-       (add-hook 'tide-mode-hook 'prettier-js-mode))
+       (add-hook 'typescript-mode-hook 'prettier-js-mode))
    #+END_SRC
 * YML
   #+BEGIN_SRC emacs-lisp
@@ -528,4 +513,8 @@
   #+BEGIN_SRC emacs-lisp
     (use-package rustic
       :ensure t)
+  #+END_SRC
+* Haskell
+  #+BEGIN_SRC emacs-lisp
+
   #+END_SRC
